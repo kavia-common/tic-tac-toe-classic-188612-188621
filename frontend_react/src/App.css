@@ -2,23 +2,34 @@
 :root {
   /* Light theme colors */
   --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --text-primary: #282c34;
-  --text-secondary: #61dafb;
-  --border-color: #e9ecef;
-  --button-bg: #007bff;
+  --bg-secondary: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #64748b;
+  --border-color: #e5e7eb;
+  --button-bg: #3b82f6; /* primary */
   --button-text: #ffffff;
+
+  /* Tic Tac Toe specific */
+  --x-color: #3b82f6; /* X primary */
+  --o-color: #06b6d4; /* O accent */
+  --square-bg: #ffffff;
+  --square-hover: #f3f4f6;
+  --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.4);
 }
 
 [data-theme="dark"] {
   /* Dark theme colors */
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #282c34;
-  --text-primary: #ffffff;
-  --text-secondary: #61dafb;
-  --border-color: #404040;
-  --button-bg: #0056b3;
+  --bg-primary: #0f172a;
+  --bg-secondary: #111827;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+  --button-bg: #2563eb;
   --button-text: #ffffff;
+
+  --square-bg: #1f2937;
+  --square-hover: #111827;
+  --focus-ring: 0 0 0 3px rgba(6, 182, 212, 0.35);
 }
 
 .App {
@@ -29,17 +40,6 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: var(--bg-secondary);
   min-height: 100vh;
@@ -47,10 +47,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: 16px;
   color: var(--text-primary);
   transition: background-color 0.3s ease;
   position: relative;
+  padding: 32px 16px;
 }
 
 .App-link {
@@ -65,40 +66,180 @@
   background-color: var(--button-bg);
   color: var(--button-text);
   border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
+  border-radius: 9999px;
+  padding: 10px 16px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(2, 6, 23, 0.15);
 }
 
 .theme-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(2, 6, 23, 0.2);
+  opacity: 0.96;
+}
+
+.theme-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .theme-toggle:active {
   transform: translateY(0);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+/* Game Layout */
+.game-container {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(2, 6, 23, 0.08);
+}
+
+.title {
+  margin: 0 0 12px;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.status {
+  margin: 0 0 20px;
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.status .x {
+  color: var(--x-color);
+  font-weight: 700;
+}
+.status .o {
+  color: var(--o-color);
+  font-weight: 700;
+}
+.status .win {
+  color: var(--x-color);
+  font-weight: 800;
+}
+.status .win.o {
+  color: var(--o-color);
+}
+
+/* Board styles */
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.square-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 110px;
+  font-size: 48px;
+  font-weight: 800;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--square-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.05s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.square-btn:hover {
+  background-color: var(--square-hover);
+}
+
+.square-btn:active {
+  transform: translateY(1px);
+}
+
+.square-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.square-btn.disabled,
+.square-btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.square-x {
+  color: var(--x-color);
+}
+
+.square-o {
+  color: var(--o-color);
+}
+
+.controls {
+  margin-top: 20px;
+}
+
+.btn-restart {
+  background: linear-gradient(135deg, var(--button-bg), #60a5fa);
+  color: var(--button-text);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(2, 6, 23, 0.15);
+  transition: transform 0.08s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+}
+
+.btn-restart:hover {
+  opacity: 0.95;
+  box-shadow: 0 6px 14px rgba(2, 6, 23, 0.2);
+}
+
+.btn-restart:active {
+  transform: translateY(1px);
+}
+
+.btn-restart:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.legend {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.legend-x {
+  color: var(--x-color);
+  font-weight: 700;
+}
+.legend-o {
+  color: var(--o-color);
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .square-btn {
+    width: 92px;
+    height: 92px;
+    font-size: 40px;
   }
 }
 
-/* Responsive design for mobile */
-@media (max-width: 768px) {
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .square-btn,
+  .btn-restart,
   .theme-toggle {
-    top: 10px;
-    right: 10px;
-    padding: 8px 16px;
-    font-size: 12px;
+    transition: none;
   }
 }
